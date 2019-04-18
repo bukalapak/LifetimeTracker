@@ -220,9 +220,23 @@ public extension LifetimeTrackable {
             lock.unlock()
         }
         
-        let instanceType = type(of: instance)
+        var instanceName = ""
+        let instanceTypeName = "\(String(reflecting: Swift.type(of: instance)))"
+        let instanceTypeNames = instanceTypeName.components(separatedBy: ".")
+        if instanceTypeNames.count == 2 {
+            if let lastScreenName = instanceTypeNames.last {
+                instanceName = lastScreenName
+            } else {
+                instanceName = ""
+            }
+        } else if instanceTypeNames.count == 3 {
+            instanceName = instanceTypeNames.suffix(2).joined(separator: ".")
+        } else {
+            instanceName = instanceTypeName
+        }
+
         var configuration = configuration
-        configuration.instanceName = String(describing: instanceType)
+        configuration.instanceName = instanceName
         configuration.pointerString = "\(Unmanaged<AnyObject>.passUnretained(instance as AnyObject).toOpaque())"
         
         func update(_ configuration: LifetimeConfiguration, with countDelta: Int) {
