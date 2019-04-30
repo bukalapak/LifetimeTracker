@@ -32,8 +32,8 @@ import Foundation
     /// - Note: The usage of `groupMaxCount` requires that a group is defined by setting `groupName`.
     public var groupMaxCount: Int? = nil
     
-    internal var instanceName: String = ""
-    internal var pointerString: String = ""
+    public var instanceName: String = ""
+    public var pointerString: String = ""
     
     /// Defines objects which are tracked based on their class names.
     ///
@@ -213,7 +213,7 @@ public extension LifetimeTrackable {
         self.onUpdate = onUpdate
     }
     
-    internal func track(_ instance: Any, configuration: LifetimeConfiguration, file: String = #file) {
+    public func track(_ instance: Any, configuration: LifetimeConfiguration, file: String = #file) {
         lock.lock()
         defer {
             self.onUpdate(self.trackedGroups)
