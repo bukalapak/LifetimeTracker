@@ -222,6 +222,31 @@ public extension LifetimeTrackable {
             
             return stack
         }
+        
+        public func leakCount(rows: inout [EntryModel]) -> Int {
+            var leaksCount = 0
+            entries.sorted { (
+                lhs: (key: String, value: LifetimeTracker.Entry),
+                rhs: (key: String, value: LifetimeTracker.Entry)) -> Bool in
+                lhs.value.count > rhs.value.count
+                }
+                .filter { (_, entry: LifetimeTracker.Entry) -> Bool in
+                    entry.count > 0
+                }.forEach { (_, entry: LifetimeTracker.Entry) in
+                    var color: UIColor
+                    switch entry.lifetimeState {
+                    case .valid: color = .green
+                    case .leaky:
+                        color = .red
+                        leaksCount += entry.count - entry.maxCount
+                    }
+                    
+                    let entryMaxCountString = entry.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(entry.maxCount)"
+                    let description = "\(entry.name) (\(entry.count)/\(entryMaxCountString)):\n\(entry.pointers.joined(separator: ", "))"
+                    rows.append((color: color, description: description))
+            }
+            return leaksCount
+        }
     }
     
     @objc public static func setup(onUpdate: @escaping UpdateClosure) {
