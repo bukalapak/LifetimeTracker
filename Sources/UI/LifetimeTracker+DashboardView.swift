@@ -154,7 +154,7 @@ typealias GroupModel = (color: UIColor, title: String, groupName: String, groupC
         return (groups: sections, leaksCount: leaksCount)
     }
     
-    func hasIssuesToDisplay(from trackedGroups: [String: LifetimeTracker.EntriesGroup]) -> Bool {
+    public func hasIssuesToDisplay(from trackedGroups: [String: LifetimeTracker.EntriesGroup]) -> Bool {
         let aDetectedIssue = trackedGroups.keys.first { trackedGroups[$0]?.lifetimeState == .leaky }
         return aDetectedIssue != nil
     }

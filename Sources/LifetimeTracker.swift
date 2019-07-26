@@ -157,7 +157,7 @@ public extension LifetimeTrackable {
         var maxCount: Int = 0
         var name: String? = nil
         fileprivate(set) var count: Int = 0
-        fileprivate(set) var entries = [String: Entry]()
+        public fileprivate(set) var entries = [String: Entry]()
         private var usedMaxCountOverride = false
         
         init(name: String) {
@@ -200,6 +200,27 @@ public extension LifetimeTrackable {
             } else if entryMaxCountOffset != 0 {
                 maxCount += entryMaxCountOffset
             }
+        }
+        
+        public func stackDescription() -> [String: Any]? {
+            var stackEntries: [[String: Any]] = []
+            entries.forEach {
+                stackEntries.append(
+                    ["name": $1.name, "count": $1.count]
+                )
+            }
+            
+            var groupName = ""
+            if let _name = name {
+                groupName = _name
+            }
+            
+            let stack: [String: Any] = [
+                "group": groupName,
+                "entries": stackEntries
+            ]
+            
+            return stack
         }
     }
     
