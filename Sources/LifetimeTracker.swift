@@ -157,7 +157,7 @@ public extension LifetimeTrackable {
         var maxCount: Int = 0
         var name: String? = nil
         fileprivate(set) var count: Int = 0
-        fileprivate(set) var entries = [String: Entry]()
+        public fileprivate(set) var entries = [String: Entry]()
         private var usedMaxCountOverride = false
         
         init(name: String) {
@@ -200,6 +200,40 @@ public extension LifetimeTrackable {
             } else if entryMaxCountOffset != 0 {
                 maxCount += entryMaxCountOffset
             }
+        }
+        
+        public func stackDescription() -> [String: Any] {
+            var stackEntries: [String: Any] = [:]
+            entries.forEach {
+                stackEntries[$1.name] = $1.count
+            }
+            
+            return stackEntries
+        }
+        
+        public func leakCount(rows: inout [EntryModel]) -> Int {
+            var leaksCount = 0
+            entries.sorted { (
+                lhs: (key: String, value: LifetimeTracker.Entry),
+                rhs: (key: String, value: LifetimeTracker.Entry)) -> Bool in
+                lhs.value.count > rhs.value.count
+                }
+                .filter { (_, entry: LifetimeTracker.Entry) -> Bool in
+                    entry.count > 0
+                }.forEach { (_, entry: LifetimeTracker.Entry) in
+                    var color: UIColor
+                    switch entry.lifetimeState {
+                    case .valid: color = .green
+                    case .leaky:
+                        color = .red
+                        leaksCount += entry.count - entry.maxCount
+                    }
+                    
+                    let entryMaxCountString = entry.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(entry.maxCount)"
+                    let description = "\(entry.name) (\(entry.count)/\(entryMaxCountString)):\n\(entry.pointers.joined(separator: ", "))"
+                    rows.append((color: color, description: description))
+            }
+            return leaksCount
         }
     }
     

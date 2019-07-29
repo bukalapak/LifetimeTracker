@@ -29,7 +29,7 @@ extension NSAttributedString {
     }
 }
 
-typealias EntryModel = (color: UIColor, description: String)
+public typealias EntryModel = (color: UIColor, description: String)
 typealias GroupModel = (color: UIColor, title: String, groupName: String, groupCount: Int, groupMaxCount: Int, entries: [EntryModel])
 
 @objc public final class LifetimeTrackerDashboardIntegration: NSObject {
@@ -131,30 +131,14 @@ typealias GroupModel = (color: UIColor, title: String, groupName: String, groupC
                 }
                 let groupMaxCountString = group.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(group.maxCount)"
                 let title = "\(group.name ?? "dashboard.sectionHeader.title.noGroup".lt_localized) (\(group.count)/\(groupMaxCountString))"
-                var rows = [EntryModel]()
-                group.entries.sorted { (lhs: (key: String, value: LifetimeTracker.Entry), rhs: (key: String, value: LifetimeTracker.Entry)) -> Bool in
-                    lhs.value.count > rhs.value.count
-                    }
-                    .filter { (_, entry: LifetimeTracker.Entry) -> Bool in
-                        entry.count > 0
-                    }.forEach { (_, entry: LifetimeTracker.Entry) in
-                        var color: UIColor
-                        switch entry.lifetimeState {
-                        case .valid: color = .green
-                        case .leaky:
-                            color = .red
-                            leaksCount += entry.count - entry.maxCount
-                        }
-                        let entryMaxCountString = entry.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(entry.maxCount)"
-                        let description = "\(entry.name) (\(entry.count)/\(entryMaxCountString)):\n\(entry.pointers.joined(separator: ", "))"
-                        rows.append((color: color, description: description))
-                }
+                var rows: [EntryModel] = []
+                leaksCount += group.leakCount(rows: &rows)
                 sections.append((color: groupColor, title: title, groupName: "\(group.name ?? "dashboard.sectionHeader.title.noGroup".lt_localized)", groupCount: group.count, groupMaxCount: group.maxCount, entries: rows))
         }
         return (groups: sections, leaksCount: leaksCount)
     }
     
-    func hasIssuesToDisplay(from trackedGroups: [String: LifetimeTracker.EntriesGroup]) -> Bool {
+    public func hasIssuesToDisplay(from trackedGroups: [String: LifetimeTracker.EntriesGroup]) -> Bool {
         let aDetectedIssue = trackedGroups.keys.first { trackedGroups[$0]?.lifetimeState == .leaky }
         return aDetectedIssue != nil
     }
