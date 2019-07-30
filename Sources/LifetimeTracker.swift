@@ -202,15 +202,6 @@ public extension LifetimeTrackable {
             }
         }
         
-        public func stackDescription() -> [String: Any] {
-            var stackEntries: [String: Any] = [:]
-            entries.forEach {
-                stackEntries[$1.name] = $1.count
-            }
-            
-            return stackEntries
-        }
-        
         public func leakCount(rows: inout [EntryModel]) -> Int {
             var leaksCount = 0
             entries.sorted { (
