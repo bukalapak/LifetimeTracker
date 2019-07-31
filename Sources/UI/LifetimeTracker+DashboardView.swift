@@ -98,17 +98,17 @@ typealias GroupModel = (color: UIColor, title: String, groupName: String, groupC
             return trackedGroups[groupName]?.lifetimeState == .leaky
             }.map { groupName in
                 let group = trackedGroups[groupName]!
-                let maxCountString = group.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(group.maxCount)"
-                return "\(group.name ?? "dashboard.sectionHeader.title.noGroup".lt_localized) (\(group.count)/\(maxCountString))"
+                let maxCountString = group.maxCount == Int.max ? "∞" : "\(group.maxCount)"
+                return "\(group.name ?? "Others") (\(group.count)/\(maxCountString))"
             }.joined(separator: ", ")
         
         if leakyGroupSummaries.isEmpty {
-            return "dashboard.header.issue.description.noIssues".lt_localized.attributed([
+            return "No issues detected".attributed([
                 String.foregroundColorAttributeName: UIColor.green
                 ])
         }
         
-        return ("\("dashboard.header.issue.description.leakDetected".lt_localized): ").attributed([
+        return ("Detected: ").attributed([
             String.foregroundColorAttributeName: UIColor.red
             ]) + leakyGroupSummaries.attributed()
     }
@@ -129,11 +129,11 @@ typealias GroupModel = (color: UIColor, title: String, groupName: String, groupC
                 case .valid: groupColor = .green
                 case .leaky: groupColor = .red
                 }
-                let groupMaxCountString = group.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(group.maxCount)"
-                let title = "\(group.name ?? "dashboard.sectionHeader.title.noGroup".lt_localized) (\(group.count)/\(groupMaxCountString))"
+                let groupMaxCountString = group.maxCount == Int.max ? "∞" : "\(group.maxCount)"
+                let title = "\(group.name ?? "Others") (\(group.count)/\(groupMaxCountString))"
                 var rows: [EntryModel] = []
                 leaksCount += group.leakCount(rows: &rows)
-                sections.append((color: groupColor, title: title, groupName: "\(group.name ?? "dashboard.sectionHeader.title.noGroup".lt_localized)", groupCount: group.count, groupMaxCount: group.maxCount, entries: rows))
+                sections.append((color: groupColor, title: title, groupName: "\(group.name ?? "Others")", groupCount: group.count, groupMaxCount: group.maxCount, entries: rows))
         }
         return (groups: sections, leaksCount: leaksCount)
     }

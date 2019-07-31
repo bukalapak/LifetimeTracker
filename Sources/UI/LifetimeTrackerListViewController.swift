@@ -38,7 +38,7 @@ class LifetimeTrackerListViewController: UIViewController {
     func update(dashboardViewModel: BarDashboardViewModel) {
         self.dashboardViewModel = dashboardViewModel
         
-        title = "popover.dasboard.title".lt_localized
+        title = "LifetimeTracker"
         
         tableViewController?.update(dashboardViewModel: dashboardViewModel)
     }

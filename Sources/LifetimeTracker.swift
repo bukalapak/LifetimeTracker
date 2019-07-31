@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Holds the properties which are needed to configure a `LifetimeTrackable`
 @objc public final class LifetimeConfiguration: NSObject {
@@ -229,7 +230,7 @@ public extension LifetimeTrackable {
                         leaksCount += entry.count - entry.maxCount
                     }
                     
-                    let entryMaxCountString = entry.maxCount == Int.max ? "macCount.notSpecified".lt_localized : "\(entry.maxCount)"
+                    let entryMaxCountString = entry.maxCount == Int.max ? "∞" : "\(entry.maxCount)"
                     let description = "\(entry.name) (\(entry.count)/\(entryMaxCountString)):\n\(entry.pointers.joined(separator: ", "))"
                     rows.append((color: color, description: description))
             }
