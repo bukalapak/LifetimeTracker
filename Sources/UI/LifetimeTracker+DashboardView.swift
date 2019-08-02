@@ -29,7 +29,7 @@ extension NSAttributedString {
     }
 }
 
-public typealias EntryModel = (color: UIColor, description: String)
+public typealias EntryModel = (color: UIColor, description: String, name: String)
 typealias GroupModel = (color: UIColor, title: String, groupName: String, groupCount: Int, groupMaxCount: Int, entries: [EntryModel])
 
 @objc public final class LifetimeTrackerDashboardIntegration: NSObject {
